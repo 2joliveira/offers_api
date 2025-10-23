@@ -10,15 +10,6 @@ import { CreateUserDto, UpdateUserDto } from './users.controller';
 export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
 
-  findByEmail(email: string) {
-    try {
-      return this.usersRepository.findByEmail(email);
-    } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException(error);
-    }
-  }
-
   async create(data: CreateUserDto) {
     try {
       const [userWithSameEmail, userWithSameUsername] = await Promise.all([
@@ -43,12 +34,22 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    try {
+      return await this.usersRepository.findAll();
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    try {
+      return await this.usersRepository.findOne(id);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
