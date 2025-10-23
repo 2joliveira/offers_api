@@ -14,10 +14,10 @@ import z from 'zod';
 import { ZodValidationPipe } from 'src/pipes/zod-validation-pipe';
 
 const createUserDto = z.object({
-  name: z.string(),
-  userName: z.string(),
+  name: z.string().trim().min(2),
+  userName: z.string().trim().min(3),
   email: z.email(),
-  password: z.string(),
+  password: z.string().trim().min(5),
 });
 
 const updateUserDto = createUserDto.partial();
