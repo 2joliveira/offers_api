@@ -52,9 +52,26 @@ export class UsersService {
     }
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    console.log({ updateUserDto });
-    return `This action updates a #${id} user`;
+  async update(id: string, data: UpdateUserDto) {
+    try {
+      const [userWithSameEmail, userWithSameUsername] = await Promise.all([
+        data.email && this.usersRepository.findByEmail(data.email),
+        data.userName && this.usersRepository.findByUsername(data.userName),
+      ]);
+
+      if (userWithSameEmail) {
+        throw new ConflictException('E-mail já cadastrado!');
+      }
+
+      if (userWithSameUsername) {
+        throw new ConflictException('UserName já existe!');
+      }
+
+      return await this.usersRepository.update(id, data);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
   remove(id: string) {
