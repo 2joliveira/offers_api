@@ -3,11 +3,11 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   HttpCode,
   UsePipes,
+  Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import z from 'zod';
@@ -47,9 +47,11 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Patch(':id')
-  @UsePipes(new ZodValidationPipe(updateUserDto))
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updateUserDto)) updateUserDto: UpdateUserDto,
+  ) {
     return this.usersService.update(id, updateUserDto);
   }
 
