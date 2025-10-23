@@ -9,4 +9,20 @@ export class UsersRepository {
   async create(data: Prisma.UserCreateArgs) {
     return await this.prismaService.user.create(data);
   }
+
+  async findByEmail(email: string) {
+    return await this.prismaService.user.findUnique({
+      where: {
+        email,
+      },
+    });
+  }
+
+  async findByUsername(userName: string) {
+    return await this.prismaService.user.findUnique({
+      where: {
+        userName,
+      },
+    });
+  }
 }
