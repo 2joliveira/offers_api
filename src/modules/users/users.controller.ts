@@ -11,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import z from 'zod';
-import { ZodValidationPipe } from 'src/pipes/zod-validation-pipe';
+import { ZodValidationPipe } from 'src/common/pipes/zod-validation-pipe';
+import { Public } from '../auth/public';
 
 const createUserDto = z.object({
   name: z.string().trim().min(2),
@@ -30,6 +31,7 @@ export type UpdateUserDto = z.infer<typeof updateUserDto>;
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createUserDto))

@@ -5,16 +5,20 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from 'src/database/prisma/repositories/users-repository';
 import { CreateUserDto, UpdateUserDto } from './users.controller';
+import { BcryptHasher } from 'src/utils/cryptography/bcrypt-hasher';
 
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private bcryptHasher: BcryptHasher,
+  ) {}
 
-  async create(data: CreateUserDto) {
+  async create({ name, email, userName, password }: CreateUserDto) {
     try {
       const [userWithSameEmail, userWithSameUsername] = await Promise.all([
-        this.usersRepository.findByEmail(data.email),
-        this.usersRepository.findByUsername(data.userName),
+        this.usersRepository.findByEmail(email),
+        this.usersRepository.findByUsername(userName),
       ]);
 
       if (userWithSameEmail) {
@@ -25,8 +29,10 @@ export class UsersService {
         throw new ConflictException('UserName já existe!');
       }
 
+      const hashedPassword = await this.bcryptHasher.hash(password);
+
       return this.usersRepository.create({
-        data,
+        data: { name, email, userName, password: hashedPassword },
       });
     } catch (error) {
       console.error(error);
