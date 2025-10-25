@@ -5,16 +5,22 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from 'src/database/prisma/repositories/users-repository';
 import { CreateUserDto, UpdateUserDto } from './users.controller';
+import { BcryptHasher } from 'src/utils/cryptography/bcrypt-hasher';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private bcryptHasher: BcryptHasher,
+    private jwtService: JwtService,
+  ) {}
 
-  async create(data: CreateUserDto) {
+  async create({ name, email, userName, password }: CreateUserDto) {
     try {
       const [userWithSameEmail, userWithSameUsername] = await Promise.all([
-        this.usersRepository.findByEmail(data.email),
-        this.usersRepository.findByUsername(data.userName),
+        this.usersRepository.findByEmail(email),
+        this.usersRepository.findByUsername(userName),
       ]);
 
       if (userWithSameEmail) {
@@ -25,9 +31,15 @@ export class UsersService {
         throw new ConflictException('UserName já existe!');
       }
 
-      return this.usersRepository.create({
-        data,
+      const hashedPassword = await this.bcryptHasher.hash(password);
+
+      const user = await this.usersRepository.create({
+        data: { name, email, userName, password: hashedPassword },
       });
+
+      const accessToken = await this.jwtService.signAsync({ sub: user.id });
+
+      return { accessToken };
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(error);
