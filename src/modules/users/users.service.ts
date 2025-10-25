@@ -6,12 +6,14 @@ import {
 import { UsersRepository } from 'src/database/prisma/repositories/users-repository';
 import { CreateUserDto, UpdateUserDto } from './users.controller';
 import { BcryptHasher } from 'src/utils/cryptography/bcrypt-hasher';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
   constructor(
     private usersRepository: UsersRepository,
     private bcryptHasher: BcryptHasher,
+    private jwtService: JwtService,
   ) {}
 
   async create({ name, email, userName, password }: CreateUserDto) {
@@ -31,9 +33,13 @@ export class UsersService {
 
       const hashedPassword = await this.bcryptHasher.hash(password);
 
-      return this.usersRepository.create({
+      const user = await this.usersRepository.create({
         data: { name, email, userName, password: hashedPassword },
       });
+
+      const accessToken = await this.jwtService.signAsync({ sub: user.id });
+
+      return { accessToken };
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException(error);
