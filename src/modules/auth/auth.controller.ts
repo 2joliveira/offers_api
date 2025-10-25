@@ -8,9 +8,9 @@ import {
 import { z } from 'zod';
 import { UsersRepository } from 'src/database/prisma/repositories/users-repository';
 import { Public } from './public';
-import { BcryptHasher } from 'src/utils/cryptography/bcrypt-hasher';
-import { JwtEncrypter } from 'src/utils/cryptography/jwt-encrypter';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation-pipe';
+import { BcryptHasher } from 'src/common/utils/cryptography/bcrypt-hasher';
+import { JwtEncrypter } from 'src/common/utils/cryptography/jwt-encrypter';
 
 const authenticateBodySchema = z.object({
   email: z.email(),
@@ -19,7 +19,7 @@ const authenticateBodySchema = z.object({
 
 type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>;
 
-@Controller('/sessions')
+@Controller('/signin')
 @Public()
 export class AuthenticateController {
   constructor(
@@ -30,7 +30,7 @@ export class AuthenticateController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(authenticateBodySchema))
-  async handle(@Body() body: AuthenticateBodySchema) {
+  async signin(@Body() body: AuthenticateBodySchema) {
     const { email, password } = body;
 
     const user = await this.usersRepository.findByEmail(email);

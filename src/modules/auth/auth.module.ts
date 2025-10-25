@@ -6,9 +6,14 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { EnvService } from 'src/config/env/env.service';
 import { EnvModule } from 'src/config/env/env.module';
+import { AuthenticateController } from './auth.controller';
+import { CryptographyModule } from 'src/common/utils/cryptography/cryptography.module';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
   imports: [
+    DatabaseModule,
+    CryptographyModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [EnvModule],
@@ -26,6 +31,7 @@ import { EnvModule } from 'src/config/env/env.module';
       },
     }),
   ],
+  controllers: [AuthenticateController],
   providers: [
     JwtStrategy,
     EnvService,
