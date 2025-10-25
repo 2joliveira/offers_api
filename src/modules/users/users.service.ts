@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from 'src/database/prisma/repositories/users-repository';
 import { CreateUserDto, UpdateUserDto } from './users.controller';
-import { BcryptHasher } from 'src/utils/cryptography/bcrypt-hasher';
 import { JwtService } from '@nestjs/jwt';
+import { BcryptHasher } from 'src/common/utils/cryptography/bcrypt-hasher';
 
 @Injectable()
 export class UsersService {
