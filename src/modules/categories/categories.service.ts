@@ -1,27 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateCategoryDto, UpdateCategoryDto } from './categories.controller';
+import { CategoriesRepository } from 'src/database/prisma/repositories/categories-repository';
 
 @Injectable()
 export class CategoriesService {
-  create(createCategoryDto: CreateCategoryDto) {
-    console.log({ createCategoryDto });
-    return 'This action adds a new category';
+  constructor(private categoriesRepository: CategoriesRepository) {}
+
+  async create(createCategoryDto: CreateCategoryDto) {
+    try {
+      return await this.categoriesRepository.create({
+        data: createCategoryDto,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async findAll() {
+    try {
+      return await this.categoriesRepository.findAll();
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string) {
+    try {
+      return await this.categoriesRepository.findOne(id);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    console.log({ updateCategoryDto });
-    return `This action updates a #${id} category`;
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    try {
+      return await this.categoriesRepository.update(id, updateCategoryDto);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    try {
+      return await this.categoriesRepository.remove(id);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 }
