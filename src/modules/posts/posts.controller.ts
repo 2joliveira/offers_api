@@ -7,10 +7,12 @@ import {
   Delete,
   UsePipes,
   Put,
+  Req,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import z from 'zod';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation-pipe';
+import { Request } from 'express';
 
 const createPostDto = z.object({
   title: z.string().trim().min(2),
@@ -57,12 +59,16 @@ export class PostsController {
   update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updatePostDto)) updatePostDto: UpdatePostDto,
+    @Req() req: Request,
   ) {
-    return this.postsService.update(id, updatePostDto);
+    const user = req.user as { sub: string };
+    return this.postsService.update(id, updatePostDto, user.sub);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(id);
+  remove(@Param('id') id: string, @Req() req: Request) {
+    const user = req.user as { sub: string };
+
+    return this.postsService.remove(id, user.sub);
   }
 }

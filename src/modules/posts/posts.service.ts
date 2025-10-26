@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreatePostDto, UpdatePostDto } from './posts.controller';
 import { PostsRepository } from 'src/database/prisma/repositories/posts-repository';
 
@@ -44,8 +48,14 @@ export class PostsService {
     }
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
+  async update(id: string, updatePostDto: UpdatePostDto, userId: string) {
     try {
+      const post = await this.postsRepository.findOne(id);
+
+      if (post?.userId !== userId) {
+        throw new UnauthorizedException();
+      }
+
       return await this.postsRepository.update(id, updatePostDto);
     } catch (error) {
       console.error(error);
@@ -53,8 +63,13 @@ export class PostsService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
     try {
+      const post = await this.postsRepository.findOne(id);
+
+      if (post?.userId !== userId) {
+        throw new UnauthorizedException();
+      }
       return await this.postsRepository.remove(id);
     } catch (error) {
       console.error(error);
