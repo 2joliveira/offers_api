@@ -4,6 +4,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { envSchema } from './config/env/env';
 import { EnvModule } from './config/env/env.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { EnvModule } from './config/env/env.module';
     EnvModule,
     UsersModule,
     AuthModule,
+    CategoriesModule,
+    PostsModule,
   ],
   controllers: [],
   providers: [],

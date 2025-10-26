@@ -22,6 +22,33 @@ model User {
   password  String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  posts     Post[]
 
   @@map("users")
+}
+
+model Category {
+  id    String @id @default(uuid()) @db.Uuid
+  name  String
+  posts Post[]
+
+  @@map("categories")
+}
+
+model Post {
+  id               String   @id @default(uuid()) @db.Uuid
+  title            String
+  description      String
+  originalPrice    Float
+  promotionalPrice Float
+  link             String
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  userId           String   @db.Uuid
+  categoryId       String   @map("category_id") @db.Uuid
+
+  user     User     @relation(fields: [userId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("posts")
 }
