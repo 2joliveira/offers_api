@@ -1,27 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreatePostDto, UpdatePostDto } from './posts.controller';
+import { PostsRepository } from 'src/database/prisma/repositories/posts-repository';
 
 @Injectable()
 export class PostsService {
-  create(createPostDto: CreatePostDto) {
-    console.log({ createPostDto });
-    return 'This action adds a new post';
+  constructor(private postsRepository: PostsRepository) {}
+
+  async create(createPostDto: CreatePostDto) {
+    try {
+      return await this.postsRepository.create({
+        data: createPostDto,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAll() {
+    try {
+      return await this.postsRepository.findAll();
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} post`;
+  async findByUser(userId: string) {
+    try {
+      return await this.postsRepository.findByUser(userId);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  update(id: string, updatePostDto: UpdatePostDto) {
-    console.log({ updatePostDto });
-    return `This action updates a #${id} post`;
+  async findOne(id: string) {
+    try {
+      return await this.postsRepository.findOne(id);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} post`;
+  async update(id: string, updatePostDto: UpdatePostDto) {
+    try {
+      return await this.postsRepository.update(id, updatePostDto);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async remove(id: string) {
+    try {
+      return await this.postsRepository.remove(id);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 }
